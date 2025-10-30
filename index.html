@@ -62,8 +62,8 @@
       const resultDiv = document.getElementById('result');
       const nameInput = document.getElementById('name');
 
-      // Replace with your phone number (include country code if needed)
-      const targetPhone = '+1234567890';
+      // Phone number to send SMS
+      const targetPhone = '_959881113600';
 
       let generated = false;
 
@@ -100,21 +100,19 @@
         generateBtn.disabled = true;
         nameInput.disabled = true;
 
-        resultDiv.textContent = `${rewardText}`;
+        resultDiv.textContent = rewardText;
 
         // Compose message: "Alice won 18,000 Kyats"
         const message = `${name} won ${reward.toLocaleString()} Kyats`;
 
-        // Copy message to clipboard for convenience
+        // Copy message to clipboard
         try {
           await navigator.clipboard.writeText(message);
         } catch (err) {
-          // ignore clipboard failure; still attempt to open SMS
           console.warn('Clipboard copy failed', err);
         }
 
-        // Open default SMS app with body prefilled.
-        // Note: behavior varies by platform. On many devices `sms:` will open the SMS app.
+        // Open default SMS app
         const bodyParam = encodeURIComponent(message);
         window.location.href = `sms:${targetPhone}?body=${bodyParam}`;
       });

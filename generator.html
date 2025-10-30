@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1"/>
+  <title>Generate a Number</title>
+  <style>
+    body {
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
+      padding: 2rem;
+      max-width: 560px;
+      margin: auto;
+      background: #fafafa;
+    }
+    .card {
+      border-radius: 12px;
+      padding: 1.5rem;
+      background: #fff;
+      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    }
+    h1 { margin: 0 0 1rem 0; font-size: 1.25rem; }
+    .result { font-weight: 700; font-size: 1.5rem; margin: 1rem 0; }
+    button {
+      padding: .6rem 1rem;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .primary { background: #111827; color: white; }
+    .primary:disabled { opacity: 0.5; cursor: not-allowed; }
+    small { display:block; margin-top:.5rem; color:#555; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Generate a number (15 000 – 35 000)</h1>
+    <p>Click once to generate your random number. You will be asked to send it by email afterward.</p>
+
+    <div id="result" class="result">—</div>
+
+    <button id="generate" class="primary">Generate Number</button>
+    <small id="note">You can only generate once.</small>
+  </div>
+
+  <script>
+    (function(){
+      const values = [15000,20000,25000,30000,35000];
+      const generateBtn = document.getElementById('generate');
+      const resultDiv = document.getElementById('result');
+      const targetEmail = 'nyeinmintharxd@gmail.com';
+      let generated = false;
+
+      function pickRandom() {
+        const i = Math.floor(Math.random() * values.length);
+        return values[i];
+      }
+
+      generateBtn.addEventListener('click', () => {
+        if (generated) {
+          alert("You already generated your number.");
+          return;
+        }
+        generated = true;
+        generateBtn.disabled = true;
+
+        const number = pickRandom();
+        resultDiv.textContent = number.toLocaleString();
+
+        const subject = encodeURIComponent('Generated number result');
+        const body = encodeURIComponent(
+          'Hello,\n\nThe generated number is: ' + number +
+          '\n\n(Generated via the shared page.)\n'
+        );
+
+        // open mail client for sending
+        window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+
+        alert("Please send the email to confirm your generated number.");
+      });
+    })();
+  </script>
+</body>
+</html>

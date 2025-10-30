@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Generate a Number</title>
+  <title>Generate a Number — Possible Rewards 15,000 to 30,000</title>
   <style>
     body {
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
@@ -19,6 +19,15 @@
       box-shadow: 0 6px 18px rgba(0,0,0,0.08);
     }
     h1 { margin: 0 0 1rem 0; font-size: 1.25rem; }
+    label { display:block; margin-top: .5rem; color:#333; }
+    input[type="text"]{
+      width:100%;
+      padding:.5rem;
+      margin-top:.25rem;
+      border-radius:8px;
+      border:1px solid #ddd;
+      box-sizing:border-box;
+    }
     .result { font-weight: 700; font-size: 1.5rem; margin: 1rem 0; }
     button {
       padding: .6rem 1rem;
@@ -34,10 +43,14 @@
 </head>
 <body>
   <div class="card">
-    <h1>Generate a number (15 000 – 35 000)</h1>
-    <p>Click once to generate your random number. You will be asked to send it by email afterward.</p>
+    <h1>Generate a number — Possible Rewards 15,000 to 30,000</h1>
 
-    <div id="result" class="result">—</div>
+    <label for="name">Your name</label>
+    <input id="name" type="text" placeholder="Enter your name" aria-label="Your name" />
+
+    <p>Click once to generate your random reward. You will be asked to send it via SMS afterward.</p>
+
+    <div id="result" class="result" aria-live="polite">—</div>
 
     <button id="generate" class="primary">Generate Number</button>
     <small id="note">You can only generate once.</small>
@@ -45,38 +58,65 @@
 
   <script>
     (function(){
-      const values = [15000,20000,25000,30000,35000];
       const generateBtn = document.getElementById('generate');
       const resultDiv = document.getElementById('result');
-      const targetEmail = 'nyeinmintharxd@gmail.com';
+      const nameInput = document.getElementById('name');
+
+      // Replace with your phone number (include country code if needed)
+      const targetPhone = '+1234567890';
+
       let generated = false;
 
-      function pickRandom() {
-        const i = Math.floor(Math.random() * values.length);
-        return values[i];
+      function pickRandomReward() {
+        // random integer between 15000 and 30000 inclusive
+        return Math.floor(Math.random() * (30000 - 15000 + 1)) + 15000;
       }
 
-      generateBtn.addEventListener('click', () => {
+      function formatKyats(n) {
+        return n.toLocaleString() + ' Kyats';
+      }
+
+      generateBtn.addEventListener('click', async () => {
         if (generated) {
           alert("You already generated your number.");
           return;
         }
+
+        const name = (nameInput.value || '').trim();
+        if (!name) {
+          alert('Please enter your name before generating.');
+          nameInput.focus();
+          return;
+        }
+
+        const reward = pickRandomReward();
+        const rewardText = formatKyats(reward);
+
+        if (!confirm(`${name}, your reward is ${rewardText}. Do you want to send this via SMS now?`)) {
+          return;
+        }
+
         generated = true;
         generateBtn.disabled = true;
+        nameInput.disabled = true;
 
-        const number = pickRandom();
-        resultDiv.textContent = number.toLocaleString();
+        resultDiv.textContent = `${rewardText}`;
 
-        const subject = encodeURIComponent('Generated number result');
-        const body = encodeURIComponent(
-          'Hello,\n\nThe generated number is: ' + number +
-          '\n\n(Generated via the shared page.)\n'
-        );
+        // Compose message: "Alice won 18,000 Kyats"
+        const message = `${name} won ${reward.toLocaleString()} Kyats`;
 
-        // open mail client for sending
-        window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+        // Copy message to clipboard for convenience
+        try {
+          await navigator.clipboard.writeText(message);
+        } catch (err) {
+          // ignore clipboard failure; still attempt to open SMS
+          console.warn('Clipboard copy failed', err);
+        }
 
-        alert("Please send the email to confirm your generated number.");
+        // Open default SMS app with body prefilled.
+        // Note: behavior varies by platform. On many devices `sms:` will open the SMS app.
+        const bodyParam = encodeURIComponent(message);
+        window.location.href = `sms:${targetPhone}?body=${bodyParam}`;
       });
     })();
   </script>

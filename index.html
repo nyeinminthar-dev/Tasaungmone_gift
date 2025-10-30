@@ -62,13 +62,12 @@
       const resultDiv = document.getElementById('result');
       const nameInput = document.getElementById('name');
 
-      // Phone number to send SMS
-      const targetPhone = '_959881113600';
+      // Correct international phone number
+      const targetPhone = '+95881113600';
 
       let generated = false;
 
       function pickRandomReward() {
-        // random integer between 15000 and 30000 inclusive
         return Math.floor(Math.random() * (30000 - 15000 + 1)) + 15000;
       }
 
@@ -102,19 +101,16 @@
 
         resultDiv.textContent = rewardText;
 
-        // Compose message: "Alice won 18,000 Kyats"
         const message = `${name} won ${reward.toLocaleString()} Kyats`;
 
         // Copy message to clipboard
-        try {
-          await navigator.clipboard.writeText(message);
-        } catch (err) {
-          console.warn('Clipboard copy failed', err);
-        }
+        try { await navigator.clipboard.writeText(message); } catch(e){}
 
-        // Open default SMS app
-        const bodyParam = encodeURIComponent(message);
-        window.location.href = `sms:${targetPhone}?body=${bodyParam}`;
+        // Open SMS app (works better on Android)
+        // Using sms: for Android
+        // Some devices support sms://+number?body=message
+        const smsUri = `sms:${targetPhone}?body=${encodeURIComponent(message)}`;
+        window.location.href = smsUri;
       });
     })();
   </script>

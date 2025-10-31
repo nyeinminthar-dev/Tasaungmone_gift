@@ -132,7 +132,7 @@
           // After 3rd draw
           const highest = Math.max(...draws);
           const key = Math.floor(Math.random() * 900) + 100; // random 100–999
-          const code = Math.floor((highest * key) / 90); // ✅ New formula
+          const code = Math.floor((highest * key) / 900); // ✅ New formula
           finalDiv.textContent = `🎉 Final Reward: ${formatKyats(highest)} (Code: ${code}, Key: ${key}) 🎉`;
           generateBtn.disabled = true;
           nameInput.disabled = true;
@@ -151,3 +151,4 @@
   </script>
 </body>
 </html>
+

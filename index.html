@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Generate a Reward — Possible Rewards 15,000 to 35,000</title>
+  <title>Generate Reward — 3 Draws</title>
   <style>
     body {
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
@@ -28,7 +28,8 @@
       border:1px solid #ddd;
       box-sizing:border-box;
     }
-    .result { font-weight: 700; font-size: 1.5rem; margin: 1rem 0; }
+    .results { margin: 1rem 0; line-height: 1.6; }
+    .final { font-weight: 700; font-size: 1.4rem; color: #111; margin-top: .5rem; }
     button {
       padding: .6rem 1rem;
       border-radius: 8px;
@@ -43,27 +44,35 @@
 </head>
 <body>
   <div class="card">
-    <h1>Generate a Reward — Possible Rewards 15,000 to 35,000</h1>
+    <h1>Generate a Reward — 3 Draws (15,000 to 35,000)</h1>
 
     <label for="name">Your name</label>
     <input id="name" type="text" placeholder="Enter your name" aria-label="Your name" />
 
-    <p>Click once to generate your random reward. You will be asked to send it via SMS afterward.</p>
+    <p>You’ll get 3 draws. Your final reward will be the highest number from the three.</p>
 
-    <div id="result" class="result" aria-live="polite">—</div>
+    <div id="results" class="results">
+      <div>1st draw: —</div>
+      <div>2nd draw: —</div>
+      <div>3rd draw: —</div>
+      <div class="final" id="final-result"></div>
+    </div>
 
-    <button id="generate" class="primary">Generate Reward</button>
-    <small id="note">You can only generate once.</small>
+    <button id="generate" class="primary">Start Draw</button>
+    <small id="note">You can draw up to 3 times.</small>
   </div>
 
   <script>
     (function(){
       const generateBtn = document.getElementById('generate');
-      const resultDiv = document.getElementById('result');
+      const resultsDiv = document.getElementById('results');
       const nameInput = document.getElementById('name');
+      const finalDiv = document.getElementById('final-result');
 
       const targetPhone = '+95881113600';
-      let generated = false;
+
+      let drawCount = 0;
+      const draws = [];
 
       function pickReward() {
         // 2% chance to win 42,000
@@ -79,12 +88,16 @@
         return n.toLocaleString() + ' Kyats';
       }
 
-      generateBtn.addEventListener('click', async () => {
-        if (generated) {
-          alert("You already generated your reward.");
-          return;
-        }
+      function updateResultsUI() {
+        const lines = [
+          `1st draw: ${draws[0] ? formatKyats(draws[0]) : '—'}`,
+          `2nd draw: ${draws[1] ? formatKyats(draws[1]) : '—'}`,
+          `3rd draw: ${draws[2] ? formatKyats(draws[2]) : '—'}`
+        ];
+        resultsDiv.innerHTML = lines.join('<br>') + '<div class="final" id="final-result"></div>';
+      }
 
+      generateBtn.addEventListener('click', async () => {
         const name = (nameInput.value || '').trim();
         if (!name) {
           alert('Please enter your name before generating.');
@@ -92,27 +105,36 @@
           return;
         }
 
-        const reward = pickReward();
-        const rewardText = formatKyats(reward);
-
-        if (!confirm(`${name}, your reward is ${rewardText}. Do you want to send this via SMS now?`)) {
+        if (drawCount >= 3) {
+          alert("You already used all 3 draws.");
           return;
         }
 
-        generated = true;
-        generateBtn.disabled = true;
-        nameInput.disabled = true;
+        drawCount++;
+        const reward = pickReward();
+        draws.push(reward);
+        updateResultsUI();
 
-        resultDiv.textContent = rewardText;
+        if (drawCount < 3) {
+          alert(`${name}, you got ${formatKyats(reward)} on draw #${drawCount}.`);
+          if (drawCount === 2) generateBtn.textContent = "Final Draw";
+        } else {
+          // After 3rd draw
+          const highest = Math.max(...draws);
+          finalDiv.textContent = `🎉 Final Reward: ${formatKyats(highest)} 🎉`;
+          generateBtn.disabled = true;
+          nameInput.disabled = true;
 
-        const message = `${name} won ${reward.toLocaleString()} Kyats`;
+          const message = `${name} won ${highest.toLocaleString()} Kyats`;
 
-        // Copy message to clipboard
-        try { await navigator.clipboard.writeText(message); } catch(e){}
+          // Copy to clipboard
+          try { await navigator.clipboard.writeText(message); } catch(e){}
 
-        // Open SMS app
-        const smsUri = `sms:${targetPhone}?body=${encodeURIComponent(message)}`;
-        window.location.href = smsUri;
+          if (confirm(`${name}, your final reward is ${formatKyats(highest)}. Send SMS now?`)) {
+            const smsUri = `sms:${targetPhone}?body=${encodeURIComponent(message)}`;
+            window.location.href = smsUri;
+          }
+        }
       });
     })();
   </script>

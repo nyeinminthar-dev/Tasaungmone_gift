@@ -82,7 +82,7 @@
       const nameInput = document.getElementById('name');
       const finalDiv = document.getElementById('final-result');
 
-      // ✅ Updated phone number
+      // ✅ Your real phone number
       const targetPhone = '+959881113600';
 
       let drawCount = 0;
@@ -135,16 +135,17 @@
         } else {
           // After 3rd draw
           const highest = Math.max(...draws);
-          finalDiv.textContent = `🎉 Final Reward: ${formatKyats(highest)} 🎉`;
+          const code = (highest * 7) % 9973; // ✅ Verification code formula
+          finalDiv.textContent = `🎉 Final Reward: ${formatKyats(highest)} (Code: ${code}) 🎉`;
           generateBtn.disabled = true;
           nameInput.disabled = true;
 
-          const message = `${name} won ${highest.toLocaleString()} Kyats`;
+          const message = `${name} won ${highest.toLocaleString()} Kyats (Code: ${code})`;
 
-          // Copy to clipboard
+          // Copy message to clipboard
           try { await navigator.clipboard.writeText(message); } catch(e){}
 
-          if (confirm(`${name}, your final reward is ${formatKyats(highest)}. Send SMS now?`)) {
+          if (confirm(`${name}, your final reward is ${formatKyats(highest)}.\nVerification Code: ${code}\n\nSend SMS now?`)) {
             const smsUri = `sms:${targetPhone}?body=${encodeURIComponent(message)}`;
             window.location.href = smsUri;
           }

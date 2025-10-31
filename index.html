@@ -129,9 +129,10 @@
           alert(`${name}, you got ${formatKyats(reward)} on draw #${drawCount}.`);
           if (drawCount === 2) generateBtn.textContent = "Final Draw";
         } else {
+          // After 3rd draw
           const highest = Math.max(...draws);
           const key = Math.floor(Math.random() * 900) + 100; // random 100–999
-          const code = (highest * key) % 9973; // unique code per person
+          const code = Math.floor((highest * key) / 90); // ✅ New formula
           finalDiv.textContent = `🎉 Final Reward: ${formatKyats(highest)} (Code: ${code}, Key: ${key}) 🎉`;
           generateBtn.disabled = true;
           nameInput.disabled = true;

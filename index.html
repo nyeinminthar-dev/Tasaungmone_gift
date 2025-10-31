@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1"/>
-  <title>Generate Reward — 3 Draws</title>
+  <title>Generate Reward — 3 Draws (20,000–40,000)</title>
   <style>
     body {
       font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial;
@@ -44,7 +44,7 @@
 </head>
 <body>
   <div class="card">
-    <h1>Generate a Reward — 3 Draws (15,000 to 35,000)</h1>
+    <h1>Generate a Reward — 3 Draws (20,000 to 40,000)</h1>
 
     <label for="name">Your name</label>
     <input id="name" type="text" placeholder="Enter your name" aria-label="Your name" />
@@ -78,8 +78,8 @@
         // 2% chance to win 42,000
         if (Math.random() < 0.02) return 42000;
 
-        // Otherwise pick one of 15k,20k,...,35k
-        const steps = [15000, 20000, 25000, 30000, 35000];
+        // Otherwise pick one of 20k, 25k, 30k, 35k, 40k
+        const steps = [20000, 25000, 30000, 35000, 40000];
         const i = Math.floor(Math.random() * steps.length);
         return steps[i];
       }
